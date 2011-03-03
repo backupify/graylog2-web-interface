@@ -138,6 +138,21 @@ $(document).ready(function(){
       }
     );
 
+    // Streams overview: Sparklines.
+    $(".streams-stream-sparkline").sparkline(
+      "html",
+      {
+        type: "line",
+        width: "70px",
+        height: "23px",
+        lineColor: "#fd0c99",
+        fillColor: "#fdd",
+        spotColor: false,
+        minSpotColor: false,
+        maxSpotColor: false
+      }
+    );
+
     // AJAX trigger
     $(".ajaxtrigger").bind("click", function() {
       field = $(this);
@@ -221,6 +236,12 @@ $(document).ready(function(){
       $("#messages-quickfilter-fields").append(field);
       return false;
     })
+
+    // Key bindings.
+    standardMapKeyOptions = { overlayClose:true }
+    $.mapKey("s", function() { $("#modal-stream-chooser").modal(standardMapKeyOptions); });
+    $.mapKey("h", function() { $("#modal-host-chooser").modal(standardMapKeyOptions); });
+
 });
 
 function buildHostCssId(id) {
