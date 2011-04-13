@@ -65,12 +65,13 @@ tbody tr:hover {
 }
 
 input, select {
-    font-size: 14px;
-    padding: 2px;
+    font-size: 12px;
+    padding: 1px;
 }
 
 label {
-    font-size: 16px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .awesome {
@@ -200,7 +201,7 @@ label {
 #top {
     height: 90px;
     width: 100%;
-    background-color: #363636;
+    background-color: #333;
 }
 
 #toplogo {
@@ -502,3 +503,22 @@ label {
 }
 #simplemodal-overlay {background-color:#000;}
 #simplemodal-container {background-color:#333; border:8px solid #444; padding:12px; color: #fff;}
+
+#back-to-top {
+  width: 100px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  text-align: center;
+  padding: 5px;
+  position: fixed;
+  top: 65px;
+  left: 65%;
+  cursor: pointer;
+  display: none;
+  color: #333;
+  font-size: 11px;
+}
+
+#server-not-running {
+  background-image: url(/images/notificationbar-red.png);
+}

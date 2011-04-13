@@ -12,7 +12,7 @@
 <% end %>
 
 <h4>Severity: <span class="highlighted"><%= syslog_level_to_human(@message.level) %></span></h4>
-<h4>Facility: <span class="highlighted"><%= Facility.to_human(@message.facility) %></span></h4>
+<h4>Facility: <span class="highlighted"><%= @message.facility %></span></h4>
 
 <% unless @message.file.blank?  %>
   <h4>File: <span class="highlighted"><%=h @message.file %><%= @message.line.blank? or @message.line == -1 ? nil : ":#{h(@message.line)}" %></span></h4>
@@ -30,6 +30,22 @@
   <p class="messages-show-message messages-full-message">
     <%= auto_link(escaped_fullmsg.gsub(/\n/, '<br />'), :html => { :target => "blank" }, :link => :urls) %>
   </p>
+<% end %>
+
+<% unless @message.streams.blank? %>
+  <h3>Filed in following streams:</h3>
+  <ul id="message-referenced-streams">
+  <% @message.referenced_streams.each do |stream| %>
+    <% next if !stream.accessable_for_user?(current_user) %>
+    <li><%= link_to stream.title, stream_path(stream) %></li>
+  <% end %>
+  </ul>
+<% end %>
+
+<% if Configuration.allow_deleting %>
+  <br />
+  <%= awesome_link "Delete message", message_path(@message), :confirm => "Really delete this message?", :method => :delete %>
+  <br />
 <% end %>
 
 <% unless @comments.blank? %>

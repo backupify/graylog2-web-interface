@@ -1,27 +1,30 @@
-source :gemcutter
-source 'http://gems.github.com'
+source :rubygems
 
-gem 'rails', '3.0.1', :require => nil
-gem 'json', '1.4.6'
-gem 'bson', '1.1.1'
-gem 'mongo', '1.1.1'
-gem 'bson_ext', '1.1.1'
-gem 'jnunemaker-validatable', '1.8.4'
-gem 'plucky', '0.3.6'
-gem 'mongo_mapper', '0.8.6'
-gem 'mysql2', '0.2.4'
-gem 'rack', '1.2.1'
-gem 'chronic', '0.3.0'
-gem 'pony'
-gem 'declarative_authorization'
-gem 'em-websocket', '0.1.4'
+gem 'rack', '~> 1.2.2'
+gem 'rails', '~> 3.0.6'
+gem 'json', '~> 1.5.1'
+gem 'plucky', '~> 0.3.6'
+gem 'chronic', '~> 0.3.0'
+gem 'pony', '~> 1.1'  # unusual version number
+gem 'graylog2-declarative_authorization', :require => 'declarative_authorization'
+gem 'mongoid', '~> 2.0.1'
+gem 'bson_ext', "~> 1.3.0"
+
+# TODO https://github.com/ph7/system-timer/issues/15
+if RUBY_VERSION.start_with?('1.8')
+  gem 'SystemTimer', '~> 1.2.3'
+end
 
 group :development, :test do
-  gem 'machinist_mongo'
-  gem 'metric_fu'
+  # might be useful to generate fake data in development
+  gem 'machinist_mongo', '~> 1.2.0', :require => 'machinist/mongoid'
+  gem 'faker', '~> 0.9.5'
+end
+
+group :test do
   gem 'ci_reporter'
   gem 'shoulda', '~> 2.11.3'
-  gem 'mocha', '~> 0.9.10'
+  gem 'shoulda-activemodel', '0.0.2', :require => 'shoulda/active_model'  # fixed version - too hacky
+  gem 'mocha', '~> 0.9.12'
   gem 'database_cleaner', '~> 0.6.0'
-  gem 'faker', '~> 0.3.1'
 end

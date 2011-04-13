@@ -58,7 +58,7 @@
 }
 
 #messages-quickfilter-delete {
-  float: right;
+  margin-top: 15px;
 }
 
 .messages-show-message {
@@ -88,67 +88,13 @@
   top: 4px;
 }
 
+#message-referenced-streams {
+  list-style-type: square;
+  margin-left: 25px;
+}
+
 .graph-rangeselector-sidebar {
   margin-top: 5px;
-}
-
-/* Blocks */
-
-.blocks {
-    margin-top: 15px;
-    float: left;
-    margin: 25px;
-}
-
-.blocks-title {
-    font-size: 25px;
-    color: #fd0c99;
-}
-
-.blocks-termslist {
-    margin-top: 10px;
-}
-
-#blocks-terms {
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-
-#blocks-terms h2 {
-    font-size: 15px;
-    float: left;
-    margin-right: 10px;
-    margin-top: 0px !important;
-}
-
-#blocks-terms li {
-    float: left;
-    margin-right: 15px;
-    font-size: 15px;
-    color: #fd0c99;
-}
-
-.blocks-terms-delete {
-    color: #000;
-}
-
-#blocks-statistics {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.blocks-statistic-line {
-    display: block;
-    background-color: #ffdddd;
-    border-top: 1px solid #ffcccc;
-    border-bottom: 1px solid #ffcccc;
-    border-right: 1px solid #ffcccc;
-    margin-bottom: 2px;
-    padding: 3px;
-}
-
-.legend {
-    display: none !important;
 }
 
 /* Hosts */
@@ -158,8 +104,18 @@
 }
 
 /* Blacklist */
-#blacklist-delete {
-  float: right;
+#blacklists li {
+  margin-left: 15px;
+  margin-bottom: 4px;
+}
+
+#blacklist-terms li {
+  margin-left: 15px;
+  margin-bottom: 4px;
+}
+
+.blacklist-terms h4 {
+  margin-top: 0px !important;
 }
 
 /* Streams */
@@ -171,6 +127,7 @@
 #streams-manage-categories-link {
   position: relative;
   top: 5px;
+  margin-left: 400px;
 }
 
 #streams-streams {
@@ -304,6 +261,59 @@
 #streams-sidebar-alarms {
   margin-left: 10px;
   font-size: 13px;
+}
+
+#streamrule_rule_type {
+  float: left;
+}
+
+.stream-value-field {
+  float: left;
+}
+
+.streams-forwarder-form {
+  display: none;
+}
+
+.streams-forwarder-form h3 {
+  margin-top: 7px !important;
+}
+
+.streams-forwarder-add {
+  font-size: 17px;
+  font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+#streams-forwarders li {
+  height: 40px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.streams-forwarders-forwarder-left {
+  height: 15px;
+  float: left;
+}
+
+.streams-forwarders-forwarder-right {
+  padding-left: 105px;
+}
+
+.streams-forwarders-forwarder-type {
+  font-size: 17px;
+  font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+.streams-forwarders-forwarder-delete {
+  font-size: 9px;
+}
+
+.streams-forwarders-forwarder-title {
+  color: #FD0C99;
+}
+
+.streams-forwarders-forwarder-details {
+  font-style: italic;
 }
 
 /* Hosts */
@@ -623,4 +633,70 @@
 
 #version-check-status {
   font-weight: bold;
+}
+
+#new-version {
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Georgia,"Times New Roman",Times,serif;
+  margin-bottom: 10px;
+  display: none;
+}
+
+/* Blocks */
+.blocks {
+    margin-top: 15px;
+    float: left;
+    margin: 25px;
+}
+
+.blocks-title {
+    font-size: 25px;
+    color: #fd0c99;
+}
+
+.blocks-termslist {
+    margin-top: 10px;
+}
+
+#blocks-terms {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#blocks-terms h2 {
+    font-size: 15px;
+    float: left;
+    margin-right: 10px;
+    margin-top: 0px !important;
+}
+
+#blocks-terms li {
+    float: left;
+    margin-right: 15px;
+   font-size: 15px;
+    color: #fd0c99;
+}
+
+.blocks-terms-delete {
+    color: #000;
+}
+
+#blocks-statistics {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.blocks-statistic-line {
+    display: block;
+    background-color: #ffdddd;
+    border-top: 1px solid #ffcccc;
+    border-bottom: 1px solid #ffcccc;
+    border-right: 1px solid #ffcccc;
+    margin-bottom: 2px;
+    padding: 3px;
+}
+
+.legend {
+    display: none !important;
 }

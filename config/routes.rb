@@ -2,10 +2,11 @@ Graylog2WebInterface::Application.routes.draw do
   match 'logout' => 'sessions#destroy', :as => :logout
   match 'login' => 'sessions#new', :as => :login
   resource :session
-  resources :settings, :dashboard, :versioncheck
+  resources :dashboard
 
   resources :users do
     collection do
+      post :createfirst
       get :first
     end
   end
@@ -14,8 +15,12 @@ Graylog2WebInterface::Application.routes.draw do
     collection do
       post :showrange
       get :showrange
+      post :getnewmessagecount
+      post :deletebystream
+      post :deletebyquickfilter
     end
-    member do 
+    member do
+      post :show
       get :around
     end
   end
@@ -24,9 +29,24 @@ Graylog2WebInterface::Application.routes.draw do
     resources :blacklistedterms, :as => "terms"
   end
 
-  resources :hosts do
+  resources :hosts, :constraints => { :id => /.*/ } do
     resources :messages
+
+    collection do
+      post :quickjump
+    end
   end
+
+  resources :hostgroups do
+    resources :messages
+    member do
+      get :hosts
+      get :settings
+      post :rename
+    end
+  end
+
+  resources :hostgroup_hosts
 
   resources :facilities do
     member do
@@ -40,10 +60,12 @@ Graylog2WebInterface::Application.routes.draw do
   resources :streams do
     resources :messages
     resources :streamrules
-    
+    resources :forwarders
+
     resources :dashboard
-  
+
     member do
+      get :analytics
       post :favorite
       post :unfavorite
       post :alertable
@@ -52,6 +74,8 @@ Graylog2WebInterface::Application.routes.draw do
       get :showrange
       post :rules
       get :rules
+      post :forward
+      get :forward
       post :setalarmvalues
       post :togglealarmactive
       post :togglefavorited
@@ -64,34 +88,58 @@ Graylog2WebInterface::Application.routes.draw do
       post :categorize
     end
   end
-  
+
   resources :alertedstreams do
     member do
       post :toggle
     end
   end
-  
+
   resources :subscribedstreams do
     member do
       post :toggle
     end
   end
-    
+
   resources :streamcategories do
     member do
       get :rename
     end
   end
-  
+
   resource :analytics do
     get :index
     get :messagespread
+    post :messagespread
+  end
+
+  resources :versioncheck do
+    collection do
+      get :perform
+    end
   end
 
   resources :filteredterms
 
+  resources :visuals, :constraints => {:id => /[a-z]+/} do
+    member do
+      post :fetch
+    end
+  end
+
+  resources :health do
+    collection do
+      post :currentthroughput
+    end
+  end
+
+  resources :settings do
+    collection do
+      post :store
+    end
+  end
+
   match '/visuals/fetch/:id' => 'visuals#fetch',:as => "visuals"
-  
-  match '/' => 'messages#index', :as => "root"
-  match '/:controller(/:action(/:id))'
+
+  root :to => 'messages#index'
 end

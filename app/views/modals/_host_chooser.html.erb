@@ -1,4 +1,4 @@
-<% hosts = Host.all(:order => "host ASC" ) %>
+<% hosts = Host.all.asc(:host) %>
 
 <h2>Hosts</h2>
 
@@ -9,7 +9,8 @@
   <li>No hosts defined</li>
 <% else %>
   <% hosts.each do |host| %>
-    <li><%= link_to host.host, { :controller => "hosts", :action => "show", :id => URI.escape(Base64.encode64(host.host)) } %></li>
+    <% next if host.blank? or host.host.blank? %>
+    <li><%= link_to host.host, host_messages_path(host.host) %></li>
   <% end %>
 <% end %>
 </ul>

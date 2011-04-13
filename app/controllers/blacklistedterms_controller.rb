@@ -1,26 +1,32 @@
 class BlacklistedtermsController < ApplicationController
-  filter_access_to :create
-  filter_access_to :destroy
+  filter_access_to :all
+
+  before_filter :load_blacklist
 
   def create
-    term = BlacklistedTerm.new params[:blacklisted_term]
+    term = @blacklist.blacklisted_terms.create params[:blacklisted_term]
     if term.save
       flash[:notice] = "Term has been added to blacklist."
     else
       flash[:error] = "Could not add term to blacklist!"
     end
-    #redirect_to :controller => "blacklists", :action => "show", :id => params[:blacklisted_term][:blacklist_id]
+
     redirect_to blacklist_path(params[:blacklist_id])
   end
-  
+
   def destroy
-    term = BlacklistedTerm.find params[:id]
+    term = @blacklist.blacklisted_terms.where({:_id => BSON::ObjectId(params[:id])})
     if term.destroy
       flash[:notice] = "Term has been removed from blacklist."
     else
       flash[:error] = "Could not remove term from blacklist."
     end
-    #redirect_to :controller => "blacklists", :action => "show", :id => params[:blacklist_id]
+
     redirect_to blacklist_path(params[:blacklist_id])
+  end
+
+  protected
+  def load_blacklist
+    @blacklist = Blacklist.find_by_id(params[:blacklist_id])
   end
 end

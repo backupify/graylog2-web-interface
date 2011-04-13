@@ -1,5 +1,4 @@
 class VisualsController < ApplicationController
-
   def fetch
     r = Hash.new
 
@@ -28,8 +27,8 @@ class VisualsController < ApplicationController
   def calculate_messagespread(is_regex, case_sensitive, message)
     values = Array.new
 
-    conditions = Hash.new
-    conditions["deleted"] = false
+    conditions = Message.not_deleted
+    #conditions["deleted"] = false
 
     if is_regex
       search_for = message
@@ -38,17 +37,17 @@ class VisualsController < ApplicationController
     end
 
     if case_sensitive
-      conditions["message"] = /#{search_for}/
+      conditions = conditions.where(:message => /#{search_for}/)
     else
-      conditions["message"] = /#{search_for}/i
+      conditions = conditions.where(:message => /#{search_for}/i)
     end
 
     hosts = Host.all
 
     highest = 0
     hosts.each do |host|
-      conditions["host"] = escape(host.host)
-      count = Message.count :conditions => conditions
+      conditions = conditions.where(:host => escape(host.host))
+      count = conditions.count
 
       if count > 0
         value = Hash.new
@@ -62,7 +61,7 @@ class VisualsController < ApplicationController
     end
 
     # Sort values.
-    values = values.sort_by { |v| v["data"]["$angularWidth"] } 
+    values = values.sort_by { |v| v["data"]["$angularWidth"] }
 
     # Add weighted colors.
     colored_values = Array.new
@@ -83,7 +82,7 @@ class VisualsController < ApplicationController
   end
 
   def calculate_hostgrouprelation(all_hosts, group_id)
-    group = Hostgroup.find(group_id)
+    group = Hostgroup.find(BSON::ObjectId(group_id))
     values = Array.new
 
     # Add hostname conditions
@@ -99,7 +98,7 @@ class VisualsController < ApplicationController
     regexes = group.regex_conditions(true)
     regexes.each do |regex|
       # Get machtching hosts.
-      hosts = Host.all :conditions => { :host.in => regex }
+      hosts = Host.all :conditions => { :host => /#{regex[:value]}/ }
       children = Array.new
       hosts.each do |host|
         children << {
@@ -110,7 +109,7 @@ class VisualsController < ApplicationController
 
       values << {
         "id" => escape(regex[:id]),
-        "name" => "Regex: #{escape(regex[:value].source)}",
+        "name" => "Regex: #{escape(regex[:value])}",
         "children" => children
       }
     end
@@ -129,12 +128,12 @@ class VisualsController < ApplicationController
       [ (c[:minute].to_i+Time.now.utc_offset)*1000, c[:count] ]
     end
   end
-  
+
   def calculate_streamgraph(stream_id, hours=12)
     stream = Stream.find(stream_id)
-    
+
     return Array.new if stream.streamrules.blank?
-  
+
     Message.stream_counts_of_last_minutes(stream.id, hours.to_i*60).collect do |c|
       [ (c[:minute].to_i+Time.now.utc_offset)*1000, c[:count] ]
     end

@@ -1,13 +1,17 @@
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
+# all but active_record
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "active_resource/railtie"
+require "rails/test_unit/railtie"
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
-    
+
 GRAYLOG2_VERSION = "0.9.5"
-GRAYLOG2_VERSION_TIMESTAMP = 1299000179
+GRAYLOG2_VERSION_TIMESTAMP = 1302475256
 
 module Graylog2WebInterface
   class Application < Rails::Application

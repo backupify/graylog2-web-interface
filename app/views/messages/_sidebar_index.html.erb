@@ -1,7 +1,7 @@
-<h2><%=raw headline %></h2>
+<h2>Welcome, <span class=\"highlighted\"><%= current_user.display_name %></span>!</h2>
 Your current time: <%= gl_date(Time.now.to_s) %>
 
-<div id="sidebar-graph" style="height: 100px;"></div>  
+<div id="sidebar-graph" style="height: 100px;"></div>
 <div id="graph-rangeselector" class="graph-rangeselector-sidebar" style="display: none;">
   <%= form_tag showrange_messages_path do %>
     <%= hidden_field_tag :from, nil, :id => "graph-rangeselector-from" %>
@@ -44,7 +44,7 @@ Your current time: <%= gl_date(Time.now.to_s) %>
   <li>Average object size: <%= number_to_human_size(MessageCollection.average_object_size) %></li>
 </ul>
 
-<h3>Jobs & Tasks</h3>
+<h3>Jobs & Tasks <%= tooltip("Notifications") %></h3>
 <ul id="jobsandtasks">
   <li>
     Stream subscriptions:
@@ -55,7 +55,7 @@ Your current time: <%= gl_date(Time.now.to_s) %>
       <span class="status-alarm-text">not running</span>
     <% end %>
   </li>
-  
+
   <li>
     Stream alerts:
     <% if AlertedStream.job_active? %>
@@ -66,7 +66,9 @@ Your current time: <%= gl_date(Time.now.to_s) %>
   </li>
 </ul>
 
+<% if current_user.role == "admin" %>
 <br />
+
 <%= awesome_link "Open dashboard", dashboard_index_path, :style => "display: inline;", :target => "_blank" %>
 
 <% if Configuration.livetail_enabled %>
@@ -74,4 +76,6 @@ Your current time: <%= gl_date(Time.now.to_s) %>
 <% end %>
 
 <br /><br />
-<%= awesome_link "Server health", :controller => "health" %>
+<%= awesome_link "Server health", health_index_path %>
+
+<% end %>

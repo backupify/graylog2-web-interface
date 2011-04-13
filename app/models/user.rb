@@ -1,6 +1,7 @@
 require 'digest/sha1'
 
-class User < ActiveRecord::Base
+class User
+  include Mongoid::Document
   include Authentication
   include Authentication::ByPassword
   include Authentication::ByCookieToken
@@ -15,7 +16,6 @@ class User < ActiveRecord::Base
 
   validates_presence_of     :email
   validates_length_of       :email,    :within => 6..100 #r@a.wk
-  validates_uniqueness_of   :email
   validates_format_of       :email,    :with => Authentication.email_regex, :message => Authentication.bad_email_message
 
   STANDARD_ROLE = :admin
@@ -24,16 +24,28 @@ class User < ActiveRecord::Base
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   attr_accessible :login, :email, :name, :password, :password_confirmation, :role, :stream_ids
-  
-  has_and_belongs_to_many :streams
-  has_and_belongs_to_many :favorite_streams, :join_table => "favorite_streams", :class_name => "Stream"
-  #has_many :subscribed_streams, :dependent => :destroy
-  has_and_belongs_to_many :subscribed_streams, :join_table => "subscribed_streams", :class_name => "Stream"
-  has_many :alerted_streams, :dependent => :destroy
+
+  field :login, :type => String
+  field :email, :type => String
+  field :name, :type => String
+  field :password, :type => String
+  field :password_confirmation, :type => String
+  field :role, :type => String
+  field :crypted_password, :type => String
+  field :salt, :type => String
+  field :remember_token, :type => String
+  field :remember_token_expires_at
+  field :stream_ids
+  field :last_version_check, :type => Integer
+
+  has_and_belongs_to_many :streams, :inverse_of => :users
+  has_and_belongs_to_many :favorite_streams,   :class_name => "Stream", :inverse_of => :favorited_streams
+  has_and_belongs_to_many :subscribed_streams, :class_name => "Stream", :inverse_of => :subscribers
+  references_many :alerted_streams
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   #
-  # uff.  this is really an authorization, not authentication routine.  
+  # uff.  this is really an authorization, not authentication routine.
   # We really need a Dispatch Chain here or something.
   # This will also let us return a human error message.
   #
@@ -43,8 +55,24 @@ class User < ActiveRecord::Base
     u && u.authenticated?(password) ? u : nil
   end
 
+  def self.find_by_id(_id)
+    find(:first, :conditions => {:_id => BSON::ObjectId(_id)})
+  end
+
+  def self.find_by_remember_token(token)
+    find(:first, :conditions => {:remember_token => token})
+  end
+
+  def self.find_by_login(login)
+    find(:first, :conditions => {:login => login})
+  end
+
   def login=(value)
     write_attribute :login, (value ? value.downcase : nil)
+  end
+
+  def display_name
+    self.name.blank? ? self.login : self.name
   end
 
   def email=(value)
@@ -54,11 +82,11 @@ class User < ActiveRecord::Base
   def roles
     role_symbols
   end
-  
+
   def role_symbols
     [(role.blank? ? STANDARD_ROLE : role.to_sym)]
   end
-  
+
   def valid_roles
     [:admin, :reader]
   end

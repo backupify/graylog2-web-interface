@@ -7,13 +7,7 @@ class BlacklistsController < ApplicationController
   end
 
   def show
-    @has_sidebar = true
-    @load_flot = true
-
-    @blacklist = Blacklist.find params[:id]
-    @messages = Message.all_of_blacklist @blacklist.id, params[:page]
-    @total_count = Message.count_of_blacklist @blacklist.id
-    @new_term = BlacklistedTerm.new
+   @new_term = BlacklistedTerm.new
   end
 
   def create
@@ -28,8 +22,7 @@ class BlacklistsController < ApplicationController
 
   def destroy
     begin
-      BlacklistedTerm.delete_all [ "blacklist_id = ?", params[:id] ]
-      blacklist = Blacklist.find params[:id]
+      blacklist = Blacklist.find(BSON::ObjectId(params[:id]))
       blacklist.destroy
       flash[:notice] = "Blacklist has been deleted"
     rescue

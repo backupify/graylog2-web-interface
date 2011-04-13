@@ -4,7 +4,7 @@ module ApplicationHelper
     if where.instance_of?(Hash)
       current = where[:controller].to_s
     else
-      current = where[1..where.length]
+      current = where[1..-1]
     end
 
     "<li class=\"#{"topmenu-active" if is_current_menu_item?(current)}\">#{link_to(title, "/#{current}")}</li>"
@@ -12,7 +12,7 @@ module ApplicationHelper
 
   def tab_link tab
     "<div class=\"content-tabs-tab#{" content-tabs-tab-active" if is_current_tab?(tab)}\" >
-      #{link_to tab, params.merge(:action => tab.downcase.to_sym) }
+      #{link_to tab.first, tab.second}
     </div>"
   end
 
@@ -31,7 +31,7 @@ module ApplicationHelper
 
   def syslog_level_to_human level
     return "None" if level == nil
-    
+
     case level.to_i
       when 0 then return "Emergency"
       when 1 then return "Alert"
@@ -77,7 +77,7 @@ module ApplicationHelper
    else
      url = visuals_path("streamgraph", :stream_id => options[:stream_id], :hours => options[:hours])
    end
-   
+
    "<script type='text/javascript'>
       function plot(data){
         $.plot($('#{options[:inject]}'),
@@ -201,22 +201,52 @@ module ApplicationHelper
   private
 
   def is_current_menu_item? item
-    true if (params[:controller] == "messages" and item == "/") or (params[:controller] == "hostgroups" and item == "hosts") or params[:controller] == item
+    return true if (@scoping == :hostgroup and item == "hosts")
+    return (@scoping.to_s.pluralize == item) unless @scoping.nil?
+
+    (@scoping == item) or (params[:controller] == root_path and item == "/") or (params[:controller] == "hostgroups" and item == "hosts") or (params[:controller] == item)
   end
-  
+
   def is_current_tab? tab
-    true if params[:action] == tab.downcase
+    current_page?(tab.second)
   end
-  
+
   def current_page
     params[:page].blank? ? 1 : params[:page].to_i
   end
-  
+
   def next_page
     current_page + 1
   end
-  
+
   def previous_page
     current_page <= 2 ? 1 : current_page - 1
+  end
+
+  def partial_for(element, scoping="shared", action="")
+    scoping = scoping.to_s.pluralize unless scoping == "shared"
+    element = element.to_s + "_#{action}" unless action == ""
+    "#{scoping}/#{element}"
+  end
+
+  def message_count_interval
+    Setting.get_message_count_interval(current_user)
+  end
+
+  def tabs
+    @tabs = []
+    if (@scoping == :stream and @stream)
+      @tabs.push ["Show", stream_path(@stream)] if permitted_to?(:show, @stream)
+      @tabs.push ["Rules", rules_stream_path(@stream)] if permitted_to?(:rules, @stream)
+      @tabs.push ["Forwarders", forward_stream_path(@stream)] if permitted_to?(:forward, @stream)
+      @tabs.push ["Analytics", analytics_stream_path(@stream)] if permitted_to?(:analytics, @stream)
+      @tabs.push ["Settings", settings_stream_path(@stream)] if permitted_to?(:show, @stream)
+    elsif (@scoping == :hostgroup and @hostgroup)
+      @tabs.push ["Show", hostgroup_path(@hostgroup)]
+      @tabs.push ["Hosts", hosts_hostgroup_path(@hostgroup)]
+      @tabs.push ["Settings", settings_hostgroup_path(@hostgroup)]
+    end
+
+    @tabs
   end
 end

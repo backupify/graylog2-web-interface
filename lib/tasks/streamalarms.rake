@@ -40,7 +40,7 @@ namespace :streamalarms do
               :subject => "#{Configuration.streamalarm_subject} (Stream: #{stream.title})",
               :body => body,
               :via => Configuration.email_transport_type,
-              :smtp => Configuration.email_smtp_settings # Only used when :via => :smtp
+              :via_options => Configuration.email_smtp_settings # Only used when :via => :smtp
             )
             puts "\t[->] #{subscriber}"
           rescue => e
@@ -50,7 +50,7 @@ namespace :streamalarms do
       else
         puts "\t#{count} messages: Not above limit."
       end
-       
+
       stream.last_alarm_check = Time.now
       stream.save
     end

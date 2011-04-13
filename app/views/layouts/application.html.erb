@@ -5,6 +5,7 @@
   <title>Graylog2</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <link rel="shortcut icon" href="/favicon.ico" />
+  <%= csrf_meta_tag %>
   <%= stylesheet_link_tag "reset" %>
   <%= stylesheet_link_tag "core" %>
   <%= stylesheet_link_tag "sections" %>
@@ -22,7 +23,6 @@
   <% end %>
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "rails" %>
-  <%= csrf_meta_tag %>
 </head>
 <body>
 
@@ -32,17 +32,25 @@
   <div id="modal-stream-chooser" style="display: none;"><%= render :partial => "modals/stream_chooser" %></div>
   <div id="modal-host-chooser" style="display: none;"><%= render :partial => "modals/host_chooser" %></div>
 
+  <div id="back-to-top">Back to top</div>
+
   <% unless flash[:notice].blank? %>
-    <div id="notification-notice" class="notification">
+    <div id="notification-notice" class="notification notification-flash">
       <span class="notification-title">Success!</span>
       <%=raw flash[:notice] %>
     </div>
   <% end %>
 
   <% unless flash[:error].blank? %>
-    <div id="notification-error" class="notification">
+    <div id="notification-error" class="notification notification-flash">
       <span class="notification-title">Error!</span>
       <%=raw flash[:error] %>
+    </div>
+  <% end %>
+
+  <% if ServerValue.ping < 65.seconds.ago %>
+    <div id="server-not-running" class="notification">
+      <span class="notification-title">Warning!</span> It seems like your Graylog2 server is not running.
     </div>
   <% end %>
 
@@ -52,7 +60,7 @@
     </div>
     <%= link_to image_tag("graylog.png", :id => "toplogo"), (permitted_to?(:index, :messages) ? messages_path : streams_path)%>
     <ul id="topmenu">
-      <% permitted_to? :index, :messages do %><%=raw menu_item("Messages", messages_path) %><% end %>
+      <% current_user.role == "admin" and permitted_to? :index, :messages do %><%=raw menu_item("Messages", messages_path) %><% end %>
       <% permitted_to? :index, :streams do %><%=raw menu_item("Streams", streams_path) %><% end %>
       <% permitted_to? :index, :analytics do %><%=raw menu_item("Analytics", analytics_path) %><% end %>
       <% permitted_to? :index, :hosts do %><%=raw menu_item("Hosts", hosts_path) %><% end %>
@@ -61,7 +69,6 @@
       <% permitted_to? :index, :users do %><%=raw menu_item("Users", users_path) %><% end %>
     </ul>
 
-    <% message_count_interval = Setting.get_message_count_interval(current_user) %>
     <div id="new-message-count">
       <% unless @hide_stats %>
         <strong><%= Message.count_of_last_minutes(message_count_interval) %></strong> / <%=h message_count_interval %> minutes
@@ -73,25 +80,23 @@
   <div id="new-messages-bar" style="display: none;"></div>
 
   <div id="content-top">
-  <% unless @tabs.blank? %>
     <div id="content-tabs">
-    <% @tabs.each do |tab| %>
-      <% permitted_to?(tab.downcase.to_sym, @stream) do %>
-        <%=raw tab_link(tab) %> 
-      <% end %>
-    <% end %>
+	<% tabs.each do |tab| %>
+	  <%= raw tab_link(tab)%>
+	<% end %>
       <br style="clear: both;" />
     </div>
-  <% end %>
   </div>
 
-  <%=raw "<div id='main-left'>" if @has_sidebar %>
+ <% if @has_sidebar %>
+  <div id='main-left'>
+ <% end %>
 
   <div id="content" <%=raw @content_class.blank? ? '' : 'class="content-' + @content_class + '"' %>>
     <div id="content-inner">
       <%= yield %>
     </div>
-    
+
     <div class="content-bottom">
       <div class="content-bottom-left"><%= image_tag "contentedge_l.png" %></div>
       <div class="content-bottom-right"><%= image_tag "contentedge_r.png" %></div>
