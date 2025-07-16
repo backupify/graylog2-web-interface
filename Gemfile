@@ -1,13 +1,13 @@
 source :rubygems
 
 gem 'rack', '~> 1.2.2'
-gem 'rails', '~> 3.0.6'
+gem 'rails', '~> 7.1.0'
 gem 'json', '~> 1.5.1'
-gem 'plucky', '~> 0.3.6'
+gem 'plucky', '~> 0.4.1'
 gem 'chronic', '~> 0.3.0'
-gem 'pony', '~> 1.1'  # unusual version number
+gem 'pony', '~> 1.2' # unusual version number
 gem 'graylog2-declarative_authorization', :require => 'declarative_authorization'
-gem 'mongoid', '~> 2.0.1'
+gem 'mongoid', '~> 7.0.12'
 gem 'bson_ext', "~> 1.3.0"
 
 # TODO https://github.com/ph7/system-timer/issues/15
